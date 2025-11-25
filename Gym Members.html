@@ -1,0 +1,647 @@
+
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>🏋️ Gym Members — Ai Fitness Zone</title>
+
+<!-- GSAP Animation Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+<style>
+  *{ margin: 0; padding: 0; box-sizing: border-box; }
+  :root{
+    --bg: #071026;
+    --card: linear-gradient(180deg,#0f172a,#0b1220);
+    --panel: #0f172a;
+    --accent: #10b981;
+    --accent-2: #22d3ee;
+    --muted: #94a3b8;
+    --glass: rgba(255,255,255,0.03);
+    --shadow: 0 10px 30px rgba(2,6,23,0.6);
+    --glow: 0 8px 30px rgba(16,185,129,0.12);
+    font-family: "Poppins", system-ui, sans-serif;
+  }
+
+  body{
+    background: radial-gradient(1200px 600px at 10% 10%, rgba(34,211,238,0.06), transparent 8%),
+                radial-gradient(900px 500px at 90% 90%, rgba(16,185,129,0.04), transparent 6%),
+                var(--bg);
+    color: #e6f6f0;
+    padding: 28px;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+
+  .navbar{
+    display:flex; align-items:center; justify-content:center;
+    height:64px; width:100%; border-radius:14px;
+    background: linear-gradient(90deg,var(--accent-2),var(--accent));
+    box-shadow: 0 8px 30px rgba(2,6,23,0.5);
+  }
+  .navbar h1{ font-size:18px; color:#ffffff; font-weight:800; letter-spacing:0.6px; font-size: 35px; }
+  .navbar h1:hover{cursor: pointer; transition: 0.3s; color: #e5f50b;}
+  .container{ max-width:1150px; margin:24px auto; }
+
+  header{ display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+  header h1{ margin:0; font-size:28px; font-weight:700; background: linear-gradient(90deg,var(--accent-2),var(--accent)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+
+  .toolbar{ margin-left:auto; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+
+  /* unified glowing button style for primary toolbar buttons */
+  .btn-prim{
+    background: linear-gradient(90deg,var(--accent-2),var(--accent));
+    color:#042b27;
+    border:none;
+    padding:10px 16px;
+    border-radius:28px;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow: 0 6px 20px rgba(16,185,129,0.12), 0 1px 0 rgba(255,255,255,0.03) inset;
+    transition: transform .12s ease, box-shadow .12s ease;
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn-prim:hover{ transform: translateY(-3px); box-shadow: 0 18px 40px rgba(16,185,129,0.14); }
+
+  .toolbar .btn{ background:var(--accent); color:white; border:none; padding:10px 16px; border-radius:25px; font-weight:600; cursor:pointer; transition:0.3s; }
+  .toolbar .btn.ghost{ background:transparent; border:1px solid rgba(255,255,255,0.06); color:#c7f3e6; }
+
+  .controls{ display:flex; gap:10px; align-items:center; margin-bottom:18px; }
+  .controls input[type="search"]{ padding:10px 14px; border-radius:25px; border:1px solid rgba(255,255,255,0.04); width:320px; background:rgba(255,255,255,0.02); color:#e6f6f0; outline:none; box-shadow: var(--shadow); }
+
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:18px; }
+  .card{ background: var(--card); border-radius:14px; padding:16px; box-shadow: var(--shadow); display:flex; flex-direction:column; align-items:center; transition: transform .18s ease, box-shadow .18s ease; cursor:pointer; position:relative; overflow:hidden; border:1px solid rgba(255,255,255,0.02); }
+  .card:hover{ transform: translateY(-6px); box-shadow: 0 20px 50px rgba(2,6,23,0.6); }
+
+  .avatar{ width:120px; height:120px; border-radius:50%; overflow:hidden; margin-bottom:10px; border:3px solid rgba(16,185,129,0.12); background:#071022; display:flex; align-items:center; justify-content:center; }
+  .avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+  .name{ font-weight:700; font-size:18px; margin-bottom:4px; text-align:center; color:#e6f6f0; }
+  .phone, .address{ font-size:13px; color:var(--muted); text-align:center; }
+  .fee{ background:linear-gradient(90deg,#064b44,#0f766e); margin-top:8px; padding:6px 10px; border-radius:8px; font-size:13px; color:#bffbec; }
+
+  .due-badge{ position:absolute; top:10px; right:10px; background:#ef4444; color:white; font-size:12px; padding:5px 8px; border-radius:8px; }
+
+  /* delete checkbox */
+  .del-select{ position:absolute; top:10px; left:10px; width:20px; height:20px; accent-color:var(--accent); display:none; transform:scale(1); }
+  .delete-mode .del-select{ display:block; }
+  .delete-mode .card{ cursor:default; }
+
+  /* Modal */
+  .modal{ display:none; position:fixed; inset:0; background:linear-gradient(rgba(2,6,23,0.72), rgba(2,6,23,0.86)); justify-content:center; align-items:center; z-index:9999; padding:18px; }
+  .modal-content{ background: linear-gradient(180deg,#071226,#0f172a); border-radius:14px; padding:20px; width:100%; max-width:720px; box-shadow: 0 30px 80px rgba(2,6,23,0.7); color:#e6f6f0; position:relative; border:1px solid rgba(255,255,255,0.02); }
+  .modal-content img{ width:140px; height:140px; border-radius:50%; border:4px solid rgba(16,185,129,0.12); margin-bottom:12px; object-fit:cover; background:#071022; display:block; margin-left:auto; margin-right:auto; }
+
+  .close-btn{ position:absolute; top:10px; right:14px; background:#ef4444; border:none; color:white; font-weight:bold; border-radius:50%; width:28px; height:28px; cursor:pointer; box-shadow:0 8px 20px rgba(0,0,0,0.4); }
+
+  form label{ display:block; color:#cfeee2; margin-bottom:6px; font-size:13px; }
+  form input[type="text"], form input[type="date"], form input[type="tel"], form textarea, form input[type="file"], form input[type="password"]{
+    padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.04); background:rgba(255,255,255,0.02); color:#e6f6f0; margin-bottom:10px; font-size:14px; width:100%;
+  }
+  form textarea{ min-height:80px; resize:vertical; }
+
+  .row{ display:flex; gap:10px; }
+  .row .col{ flex:1; }
+
+  .btn-row{ display:flex; gap:10px; justify-content:center; margin-top:10px; flex-wrap:wrap; }
+  .btn{ background:var(--accent); color:#042b27; border:none; padding:10px 16px; border-radius:22px; font-weight:700; cursor:pointer; box-shadow: 0 8px 30px rgba(16,185,129,0.12); }
+  .btn.ghost{ background:transparent; color:#bfeee0; border:1px solid rgba(255,255,255,0.04); }
+
+  .muted{ color:var(--muted); font-size:13px; margin-top:6px; }
+  footer{ text-align:center; padding:18px; background:transparent; color:var(--muted); font-size:.9rem; margin-top:18px; }
+
+  /* password overlay card */
+  .pw-card{ background: linear-gradient(180deg,#041426,#071022); padding:22px; border-radius:12px; width:100%; max-width:460px; box-shadow:0 30px 80px rgba(2,6,23,0.6); text-align:center; color:#e6eef6; border:1px solid rgba(255,255,255,0.02); }
+  .pw-row{ display:flex; align-items:center; gap:8px; margin-top:8px; justify-content:center; }
+
+  /* small icon button inline with inputs */
+  .icon-btn{
+    display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:8px; border:none; background:transparent; cursor:pointer;
+    color: #bfeee0;
+  }
+  .input-with-icon{ display:flex; gap:8px; align-items:center; }
+  .input-with-icon input{ flex:1; }
+
+  /* small responsive */
+  @media (max-width:720px){
+    .modal-content{ padding:14px; max-width:92%; }
+    .controls input[type="search"]{ width:100%; }
+  }
+</style>
+</head>
+
+<body>
+  <!-- PASSWORD OVERLAY -->
+  <div id="pwOverlay" class="modal" style="display:none;">
+    <div class="pw-card" id="pwCard">
+      <h3 style="margin-bottom:6px;">Gym Admin Login</h3>
+      <p class="muted">Please enter unlock password</p>
+      <div id="pwErr" style="color:#ffb4b4; min-height:18px; margin-top:6px;"></div>
+
+      <div style="margin-top:12px;">
+        <label style="display:block; text-align:left; color:#cfeee2; margin-bottom:6px;">Password</label>
+        <div class="input-with-icon" style="max-width:360px; margin:0 auto;">
+          <input id="pwInput" type="password" placeholder="Enter Password" autocomplete="off" style="border-color: #071026; color: #deec0e; background-color: #071026; height: 30px;" />
+          <button id="pwToggle" class="icon-btn" title="Show / Hide password" aria-label="Toggle password visibility">
+            <!-- eye svg (closed by default) -->
+            <svg id="pwEye" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l22 22"></path><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-5 0-9.27-3-11-7 1.04-2.2 2.78-3.96 4.9-5.2"></path><path d="M10.58 6.58A9 9 0 0 1 21 12c-.77 1.62-2.1 3.03-3.76 4.18"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="pw-row" style="margin-top:14px;">
+        <button id="pwSubmit" class="btn-prim">Unlock</button>
+        <button id="pwCancel" class="btn ghost">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHANGE PASSWORD MODAL -->
+  <div id="changePwModal" class="modal" aria-hidden="true" style="display:none;">
+    <div class="modal-content" id="changePwContent">
+      <button class="close-btn" id="closeChangePw">×</button>
+      <h2 style="margin-bottom:8px;">Change Unlock Password</h2>
+      <p class="muted">Enter old password, then set a new password</p>
+      <div id="changeErr" style="color:#ffb4b4; min-height:18px; margin-bottom:6px;"></div>
+
+      <form id="changePwForm" style="margin-top:6px; text-align:left;">
+        <label>पुराना पासवर्ड</label>
+        <div class="input-with-icon">
+          <input type="password" id="oldPw" autocomplete="off" required />
+          <button type="button" class="icon-btn" id="oldPwToggle" title="Show/Hide"><svg id="oldEye" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l22 22"></path><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-5 0-9.27-3-11-7 1.04-2.2 2.78-3.96 4.9-5.2"></path><path d="M10.58 6.58A9 9 0 0 1 21 12c-.77 1.62-2.1 3.03-3.76 4.18"></path></svg></button>
+        </div>
+
+        <label>नया पासवर्ड</label>
+        <div class="input-with-icon">
+          <input type="password" id="newPw" autocomplete="off" required />
+          <button type="button" class="icon-btn" id="newPwToggle" title="Show/Hide"><svg id="newEye" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l22 22"></path><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-5 0-9.27-3-11-7 1.04-2.2 2.78-3.96 4.9-5.2"></path><path d="M10.58 6.58A9 9 0 0 1 21 12c-.77 1.62-2.1 3.03-3.76 4.18"></path></svg></button>
+        </div>
+
+        <label>Confirm नया पासवर्ड</label>
+        <div class="input-with-icon">
+          <input type="password" id="confPw" autocomplete="off" required />
+          <button type="button" class="icon-btn" id="confPwToggle" title="Show/Hide"><svg id="confEye" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l22 22"></path><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-5 0-9.27-3-11-7 1.04-2.2 2.78-3.96 4.9-5.2"></path><path d="M10.58 6.58A9 9 0 0 1 21 12c-.77 1.62-2.1 3.03-3.76 4.18"></path></svg></button>
+        </div>
+
+        <div class="btn-row" style="justify-content:flex-end; margin-top:12px;">
+          <button type="submit" class="btn-prim">Update Password</button>
+          <button type="button" id="cancelChange" class="btn ghost">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="navbar"><h1>Ai Fitness Zone</h1></div>
+
+  <div class="container">
+    <header>
+      <h1>🏋️ Gym Members</h1>
+      <div class="toolbar">
+        <button id="addMemberBtn" class="btn-prim">+ Add Member</button>
+        <button id="exportCsv" class="btn ghost">Export CSV</button>
+        <button id="changePwBtn" class="btn-prim" style="display:none;">Change Password</button>
+        <button id="deleteModeBtn" class="btn-prim" style="display:none;">🗑️ Delete Profiles</button>
+      </div>
+    </header>
+
+    <div class="controls">
+      <input type="search" id="search" placeholder="नाम / नंबर / पता से खोजें..." />
+    </div>
+
+    <div id="listArea">
+      <div class="grid" id="cardsGrid"></div>
+    </div>
+  </div>
+
+  <!-- Profile Modal -->
+  <div class="modal" id="profileModal">
+    <div class="modal-content" id="profileContent"></div>
+  </div>
+
+  <!-- Add Member Modal -->
+  <div class="modal" id="addModal">
+    <div class="modal-content">
+      <button class="close-btn" id="closeAdd">×</button>
+      <h2 style="text-align:center; margin-bottom:8px;">Add New Member</h2>
+      <form id="addForm">
+        <label>NAME</label>
+        <input type="text" id="name" required />
+        <label>PHONE NUMBER</label>
+        <input type="tel" id="phone" required />
+        <label>Photo (file)</label>
+        <input type="file" id="photoFile" accept="image/*" />
+        <label>or Photo URL</label>
+        <input type="text" id="photoUrl" />
+        <label>ADDRESS</label>
+        <textarea id="address" required></textarea>
+
+        <div class="row">
+          <div class="col"><label>Fee From</label><input type="date" id="fee_from" required /></div>
+          <div class="col"><label>Fee To</label><input type="date" id="fee_to" required /></div>
+        </div>
+
+        <div class="btn-row" style="justify-content:center; margin-top:6px;">
+          <button type="submit" class="btn-prim">✅ Save Member</button>
+          <button type="button" id="resetAdd" class="btn ghost">Reset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script>
+/* ------------ Basics: password, storage, util ------------ */
+const DEFAULT_PASSWORD = 'afroz786@khan';
+const PW_STORAGE_KEY = 'gymPassword_v1';
+const AUTH_KEY = 'gymAuthenticated_v1';
+const STORAGE_KEY = 'gymMembers_v1';
+
+function getStoredPassword(){ try{ const p = localStorage.getItem(PW_STORAGE_KEY); return p || DEFAULT_PASSWORD; }catch(e){ return DEFAULT_PASSWORD; } }
+function setStoredPassword(newPw){ try{ localStorage.setItem(PW_STORAGE_KEY, newPw); return true; }catch(e){ return false; } }
+
+function fmt(dateStr){ if(!dateStr) return '-'; const d = new Date(dateStr); if(isNaN(d)) return '-'; const day = String(d.getDate()).padStart(2,'0'); const mon = String(d.getMonth()+1).padStart(2,'0'); const yr = d.getFullYear(); return `${day}-${mon}-${yr}`; }
+function isExpired(fee_to){ if(!fee_to) return true; const today = new Date(); const to = new Date(fee_to); to.setHours(23,59,59,999); return to < today; }
+function uid(){ return Date.now() + Math.floor(Math.random()*999); }
+function escapeHtml(text){ return String(text || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fileToDataURL(file){ return new Promise((res, rej)=>{ const r = new FileReader(); r.onload = ()=> res(r.result); r.onerror = e=> rej(e); r.readAsDataURL(file); }); }
+
+let members = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
+  {id:1, name:"Md. Sohel Reza", phone:"8651133186", photo:"images/sohel.jpg", address:"Masoom Gali, Dargah Road, Patna-06", fee_from:"2025-10-27", fee_to:"2026-01-27"},
+  {id:2, name:"Md. Shabab Reza", phone:"8651133186", photo:"images/shabab.jpg", address:"Masoom Gali, Dargah Road, Patna-06", fee_from:"2025-10-01", fee_to:"2025-12-31"},
+  {id:3, name:"Noor Jahan", phone:"9304068965", photo:"images/noor.png", address:"Masoom Gali, Dargah Road, Patna-06", fee_from:"2025-06-01", fee_to:"2025-06-30"}
+];
+
+function saveStore(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(members)); }catch(e){ console.error('saveStore error', e); } }
+
+/* ------------ Render Cards ------------ */
+function renderCards(data){
+  const grid = document.getElementById('cardsGrid');
+  grid.innerHTML = '';
+  data.forEach(m => {
+    const expired = isExpired(m.fee_to);
+    const card = document.createElement('div');
+    card.className = 'card';
+    const photoSrc = m.photo && m.photo.length ? m.photo : 'https://via.placeholder.com/120x120?text=No+Photo';
+    card.innerHTML = `
+      ${expired ? '<div class="due-badge">Due</div>' : ''}
+      <input type="checkbox" class="del-select" data-id="${m.id}">
+      <div class="avatar"><img src="${photoSrc}" alt="${escapeHtml(m.name)}" onerror="this.src='https://via.placeholder.com/120x120?text=No+Photo'"/></div>
+      <div class="name">${escapeHtml(m.name)}</div>
+      <div class="phone">📞 ${escapeHtml(m.phone)}</div>
+      <div class="address">${escapeHtml(m.address)}</div>
+      <div class="fee">${fmt(m.fee_from)} → ${fmt(m.fee_to)}</div>
+    `;
+    // If delete-mode is active, clicking a card shouldn't open it
+    card.addEventListener('click', (e)=>{
+      if(document.body.classList.contains('delete-mode')) return;
+      openProfile(m.id);
+    });
+    grid.appendChild(card);
+  });
+  saveStore();
+}
+
+/* ------------ Delete Mode (multi) ------------ */
+const deleteModeBtn = document.getElementById('deleteModeBtn');
+deleteModeBtn.addEventListener('click', ()=>{
+  const isOn = document.body.classList.toggle('delete-mode');
+  deleteModeBtn.textContent = isOn ? '✅ Confirm Delete' : '🗑️ Delete Profiles';
+  // when switching off (Confirm), perform deletion of checked
+  if(!isOn){
+    const checked = Array.from(document.querySelectorAll('.del-select:checked'));
+    if(checked.length){
+      if(confirm(`Delete ${checked.length} selected profile(s)?`)){
+        const ids = checked.map(c => Number(c.dataset.id));
+        members = members.filter(m => !ids.includes(m.id));
+        saveStore();
+        renderCards(members);
+        alert('Deleted successfully ✅');
+      } else {
+        // if user cancelled, keep the cards as-is
+        renderCards(members);
+      }
+    } else {
+      // nothing selected: just toggle mode off
+      renderCards(members);
+    }
+  }
+});
+
+/* ------------ Profile Modal (View -> Edit inline) ------------ */
+function openProfile(id){
+  const m = members.find(x => x.id === id);
+  if(!m) return;
+  const modal = document.getElementById('profileModal');
+  const content = document.getElementById('profileContent');
+
+  const photoSrc = m.photo && m.photo.length ? m.photo : 'https://via.placeholder.com/140?text=No+Photo';
+  content.innerHTML = `
+    <button class="close-btn" id="closeModal">×</button>
+    <img id="profImg" src="${photoSrc}" alt="${escapeHtml(m.name)}" onerror="this.src='https://via.placeholder.com/140?text=No+Photo'"/>
+    <h2 id="profName" style="text-align:center; margin-top:6px;">${escapeHtml(m.name)}</h2>
+    <p id="profPhone" style="text-align:center; margin:6px 0;">📞 ${escapeHtml(m.phone)}</p>
+    <p id="profAddress" style="text-align:center; margin:6px 0;">🏠 ${escapeHtml(m.address)}</p>
+    <p id="profFee" style="text-align:center; margin:6px 0;">💰 Fee: ${fmt(m.fee_from)} → ${fmt(m.fee_to)} ${isExpired(m.fee_to) ? '<span style="color:#ef4444;">(Due)</span>' : ''}</p>
+
+    <div style="margin-top:12px;" class="btn-row">
+      <button class="btn" id="editProfileBtn">✏️ Edit Profile</button>
+      <button class="btn ghost" id="deleteOneBtn">🗑️ Delete Profile</button>
+    </div>
+
+    <div id="editArea" style="display:none; text-align:left; margin-top:14px;">
+      <h3 style="margin-bottom:8px;">Edit Member</h3>
+      <form id="editForm">
+        <label>नाम</label>
+        <input type="text" id="e_name" value="${escapeHtml(m.name)}" required />
+        <label>फोन</label>
+        <input type="tel" id="e_phone" value="${escapeHtml(m.phone)}" required />
+        <label>Photo (file - optional)</label>
+        <input type="file" id="e_photoFile" accept="image/*" />
+        <label>या Photo URL</label>
+        <input type="text" id="e_photoUrl" value="${escapeHtml(m.photo||'')}" />
+        <label>पता</label>
+        <textarea id="e_address">${escapeHtml(m.address)}</textarea>
+
+        <div class="row">
+          <div class="col">
+            <label>Fee From</label>
+            <input type="date" id="e_fee_from" value="${m.fee_from || ''}" />
+          </div>
+          <div class="col">
+            <label>Fee To</label>
+            <input type="date" id="e_fee_to" value="${m.fee_to || ''}" />
+          </div>
+        </div>
+
+        <div class="btn-row" style="margin-top:10px;">
+          <button type="submit" class="btn-prim">💾 Save Changes</button>
+          <button type="button" id="cancelEdit" class="btn ghost">Cancel</button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  modal.style.display = 'flex';
+  gsap.fromTo(content, {scale:0.9, opacity:0}, {scale:1, opacity:1, duration:0.22, ease:"power2.out"});
+
+  // close handlers
+  document.getElementById('closeModal').onclick = ()=> modal.style.display = 'none';
+  modal.onclick = (e)=> { if(e.target === modal) modal.style.display = 'none'; };
+
+  // delete single profile (with confirmation)
+  document.getElementById('deleteOneBtn').onclick = ()=>{
+    if(confirm(`क्या आप "${m.name}" को हटाना चाहते हैं?`)){
+      members = members.filter(x => x.id !== m.id);
+      saveStore();
+      renderCards(members);
+      modal.style.display = 'none';
+      alert('Profile deleted ✅');
+    }
+  };
+
+  // toggle edit area
+  const editBtn = document.getElementById('editProfileBtn');
+  const editArea = document.getElementById('editArea');
+  editBtn.onclick = ()=> {
+    editArea.style.display = editArea.style.display === 'block' ? 'none' : 'block';
+    if(editArea.style.display === 'block') gsap.fromTo(editArea, {opacity:0, y:8},{opacity:1, y:0, duration:0.18});
+  };
+
+  // cancel edit
+  document.getElementById('cancelEdit').onclick = ()=> { editArea.style.display = 'none'; };
+
+  // edit form submit (no prompts) -> update inline
+  const editForm = document.getElementById('editForm');
+  editForm.onsubmit = async (ev)=>{
+    ev.preventDefault();
+    const idx = members.findIndex(x=>x.id === m.id);
+    if(idx === -1) return;
+    const e_name = document.getElementById('e_name').value.trim();
+    const e_phone = document.getElementById('e_phone').value.trim();
+    const e_address = document.getElementById('e_address').value.trim();
+    const e_fee_from = document.getElementById('e_fee_from').value;
+    const e_fee_to = document.getElementById('e_fee_to').value;
+    const fileInput = document.getElementById('e_photoFile');
+    let photoVal = document.getElementById('e_photoUrl').value.trim();
+    if(fileInput.files && fileInput.files[0]){
+      try{ photoVal = await fileToDataURL(fileInput.files[0]); }catch(err){ console.error(err); }
+    }
+    members[idx] = {
+      ...members[idx],
+      name: e_name,
+      phone: e_phone,
+      address: e_address,
+      fee_from: e_fee_from,
+      fee_to: e_fee_to,
+      photo: photoVal
+    };
+    saveStore();
+    renderCards(members);
+    // reflect changes in modal view (and close edit)
+    document.getElementById('profImg').src = members[idx].photo || 'https://via.placeholder.com/140?text=No+Photo';
+    document.getElementById('profName').textContent = members[idx].name;
+    document.getElementById('profPhone').textContent = '📞 '+members[idx].phone;
+    document.getElementById('profAddress').textContent = '🏠 '+members[idx].address;
+    document.getElementById('profFee').innerHTML = `💰 Fee: ${fmt(members[idx].fee_from)} → ${fmt(members[idx].fee_to)} ${isExpired(members[idx].fee_to) ? '<span style="color:#ef4444;">(Due)</span>' : ''}`;
+    editArea.style.display = 'none';
+    gsap.fromTo('#profName', {scale:0.96},{scale:1,duration:0.18});
+    alert('Updated ✅');
+  };
+}
+
+/* ------------ Add Member Modal ------------ */
+const addBtn = document.getElementById('addMemberBtn');
+const addModal = document.getElementById('addModal');
+const closeAdd = document.getElementById('closeAdd');
+const addForm = document.getElementById('addForm');
+const resetAdd = document.getElementById('resetAdd');
+
+addBtn.onclick = ()=> {
+  addModal.style.display = 'flex';
+  gsap.fromTo(addModal.querySelector('.modal-content'), {scale:0.9, opacity:0}, {scale:1, opacity:1, duration:0.25});
+};
+closeAdd.onclick = ()=> addModal.style.display = 'none';
+addModal.onclick = (e)=>{ if(e.target===addModal) addModal.style.display='none'; };
+resetAdd.onclick = ()=> addForm.reset();
+
+addForm.onsubmit = async (e)=>{
+  e.preventDefault();
+  const name = document.getElementById('name').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const address = document.getElementById('address').value.trim();
+  const fee_from = document.getElementById('fee_from').value;
+  const fee_to = document.getElementById('fee_to').value;
+  const fileInput = document.getElementById('photoFile');
+  let photoVal = document.getElementById('photoUrl').value.trim();
+  if(fileInput.files && fileInput.files[0]){
+    try{ photoVal = await fileToDataURL(fileInput.files[0]); }catch(err){ console.error("photo read error", err); }
+  }
+  const newMember = { id: uid(), name, phone, address, fee_from, fee_to, photo: photoVal };
+  members.push(newMember);
+  saveStore();
+  renderCards(members);
+  addForm.reset();
+  addModal.style.display = 'none';
+  alert('Member Added ✅');
+};
+
+/* ------------ Search ------------ */
+document.getElementById('search').addEventListener('input', e=>{
+  const q = String(e.target.value || '').toLowerCase();
+  const filtered = members.filter(m =>
+    (m.name||'').toLowerCase().includes(q) ||
+    (m.phone||'').toLowerCase().includes(q) ||
+    (m.address||'').toLowerCase().includes(q)
+  );
+  renderCards(filtered);
+});
+
+/* ------------ Export CSV ------------ */
+document.getElementById('exportCsv').onclick = ()=>{
+  if(!members.length){ alert('कोई member नहीं'); return; }
+  const rows = [
+    ['id','name','phone','address','fee_from','fee_to','photoDataOrURL']
+  ];
+  members.forEach(m=>{
+    rows.push([m.id, m.name, m.phone, m.address, m.fee_from || '', m.fee_to || '', m.photo || '']);
+  });
+  const csv = rows.map(r => r.map(cell => `"${String(cell||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'gym_members.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+/* ------------ Password UI & Change Password (with eye toggles) ------------ */
+const pwOverlay = document.getElementById('pwOverlay');
+const pwInput = document.getElementById('pwInput');
+const pwSubmit = document.getElementById('pwSubmit');
+const pwCancel = document.getElementById('pwCancel');
+const pwErr = document.getElementById('pwErr');
+const changePwBtn = document.getElementById('changePwBtn');
+
+function showPwOverlay(){ pwErr.textContent = ''; pwInput.value = ''; pwOverlay.style.display = 'flex'; document.querySelector('.container').classList.add('locked'); setTimeout(()=> pwInput.focus(), 60); }
+function hidePwOverlay(){ pwOverlay.style.display = 'none'; document.querySelector('.container').classList.remove('locked'); }
+function unlockApp(){ try{ sessionStorage.setItem(AUTH_KEY, '1'); }catch(e){} hidePwOverlay(); changePwBtn.style.display = 'inline-flex'; document.getElementById('deleteModeBtn').style.display = 'inline-flex'; renderCards(members); }
+
+/* Eye toggle helpers */
+function toggleInputVisibility(inputEl, eyeSvgEl){
+  if(inputEl.type === 'password'){ inputEl.type = 'text'; // change svg to 'open eye' (simple swap)
+    eyeSvgEl.innerHTML = '<path d=\"M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z\"></path><circle cx=\"12\" cy=\"12\" r=\"3\"></circle>';
+  } else { inputEl.type = 'password';
+    eyeSvgEl.innerHTML = '<path d=\"M1 1l22 22\"></path><path d=\"M17.94 17.94A10.94 10.94 0 0 1 12 19c-5 0-9.27-3-11-7 1.04-2.2 2.78-3.96 4.9-5.2\"></path><path d=\"M10.58 6.58A9 9 0 0 1 21 12c-.77 1.62-2.1 3.03-3.76 4.18\"></path>';
+  }
+}
+
+/* pw overlay eye */
+document.getElementById('pwToggle').addEventListener('click', ()=>{
+  const eye = document.getElementById('pwEye');
+  toggleInputVisibility(pwInput, eye);
+});
+
+/* change password modal eyes */
+document.getElementById('oldPwToggle').addEventListener('click', ()=>{
+  const eye = document.getElementById('oldEye');
+  toggleInputVisibility(document.getElementById('oldPw'), eye);
+});
+document.getElementById('newPwToggle').addEventListener('click', ()=>{
+  const eye = document.getElementById('newEye');
+  toggleInputVisibility(document.getElementById('newPw'), eye);
+});
+document.getElementById('confPwToggle').addEventListener('click', ()=>{
+  const eye = document.getElementById('confEye');
+  toggleInputVisibility(document.getElementById('confPw'), eye);
+});
+
+/* Auth on load */
+function checkAuthOnLoad(){
+  try{
+    const ok = sessionStorage.getItem(AUTH_KEY);
+    if(ok === '1'){ changePwBtn.style.display='inline-flex'; document.getElementById('deleteModeBtn').style.display='inline-flex'; return; }
+  }catch(e){}
+  showPwOverlay();
+}
+checkAuthOnLoad();
+
+pwSubmit.addEventListener('click', () => {
+  const val = pwInput.value || '';
+  const currentPw = getStoredPassword();
+  if(val === currentPw){
+    try{ sessionStorage.setItem(AUTH_KEY, '1'); }catch(e){}
+    pwErr.textContent = '';
+    gsap.to('#pwCard', {scale:0.95, opacity:0, duration:0.18, onComplete: ()=>{ unlockApp(); }});
+  } else {
+    pwErr.textContent = 'Incorrect password — Try Again';
+    gsap.fromTo('#pwCard', {x:-8},{x:8, duration:0.06, yoyo:true, repeat:5, onComplete: ()=> gsap.to('#pwCard',{x:0,duration:0.05})});
+  }
+});
+pwInput.addEventListener('keyup', (e)=>{ if(e.key === 'Enter') pwSubmit.click(); });
+pwCancel.addEventListener('click', ()=> { pwErr.textContent = 'इस पेज को देखने के लिए पासवर्ड जरूरी है'; });
+
+/* Change Password modal logic */
+const changePwModal = document.getElementById('changePwModal');
+const changePwForm = document.getElementById('changePwForm');
+const changeErr = document.getElementById('changeErr');
+const closeChangePw = document.getElementById('closeChangePw');
+const cancelChange = document.getElementById('cancelChange');
+
+changePwBtn.addEventListener('click', ()=> {
+  changeErr.textContent = '';
+  document.getElementById('oldPw').value = '';
+  document.getElementById('newPw').value = '';
+  document.getElementById('confPw').value = '';
+  changePwModal.style.display = 'flex';
+  gsap.fromTo('#changePwContent', {scale:0.92, opacity:0},{scale:1, opacity:1, duration:0.18});
+});
+closeChangePw.onclick = ()=> changePwModal.style.display = 'none';
+cancelChange.onclick = ()=> changePwModal.style.display = 'none';
+changePwModal.onclick = (e)=>{ if(e.target===changePwModal) changePwModal.style.display='none'; };
+
+changePwForm.onsubmit = (e)=>{
+  e.preventDefault();
+  const oldPw = document.getElementById('oldPw').value || '';
+  const newPw = document.getElementById('newPw').value || '';
+  const confPw = document.getElementById('confPw').value || '';
+  const cur = getStoredPassword();
+  if(oldPw !== cur){
+    changeErr.textContent = 'Old password गलत है';
+    return;
+  }
+  if(newPw.length < 4){
+    changeErr.textContent = 'नया पासवर्ड कम से कम 4 अक्षर का होना चाहिए';
+    return;
+  }
+  if(newPw !== confPw){
+    changeErr.textContent = 'नया पासवर्ड और confirmation match नहीं कर रहे';
+    return;
+  }
+  const ok = setStoredPassword(newPw);
+  if(!ok){
+    changeErr.textContent = 'कुछ गलत हुआ — ब्राउज़र में स्टोर नहीं हो पाया';
+    return;
+  }
+  changeErr.style.color = '#a7f3d0';
+  changeErr.textContent = 'पासवर्ड बदल गया ✅';
+  gsap.to('#changePwContent', {scale:0.98, duration:0.12, onComplete: ()=> {
+    setTimeout(()=> {
+      changeErr.style.color = '#ffb4b4';
+      changePwModal.style.display = 'none';
+    }, 700);
+  }});
+};
+
+/* ------------ Initial render ------------ */
+renderCards(members);
+
+/* footer year */
+document.addEventListener('DOMContentLoaded', ()=>{ try{ const y = new Date().getFullYear(); const el = document.getElementById('year'); if(el) el.textContent = y;}catch(e){} });
+</script>
+
+<!-- footer  -->
+  <footer>© <span id="year"></span> Ai Fitness Zone — Designed with ❤️ by Sohel Reza</footer>
+
+</body>
+</html>

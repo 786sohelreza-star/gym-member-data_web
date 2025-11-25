@@ -1,0 +1,456 @@
+
+
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Gym Members</title>
+<link rel="stylesheet" href="gym.js">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+  :root{
+    --bg:#f6f9fc;
+    --card:#fff;
+    --accent:#1e90ff;
+    --muted:#6b7280;
+    --shadow: 0 6px 18px rgba(25, 42, 70, .08);
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  body{ 
+    margin:0; 
+    background:var(--bg); color:#0f1724; 
+    padding:28px; 
+  }
+  header{ 
+    display:flex; 
+    gap:12px; 
+    align-items:center; 
+    margin-bottom:18px; 
+  }
+  header h1{ 
+    margin:0; 
+    font-size:20px; 
+  }
+  .toolbar{ 
+    margin-left:auto; 
+    display:flex; 
+    gap:8px; 
+    align-items:center; 
+  }
+  .container{ 
+    max-width:1100px; 
+    margin:0 auto; 
+  }
+  .grid{ 
+    display:grid; 
+    grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); 
+    gap:16px; 
+  }
+.card{
+    background:var(--card);
+    border-radius:12px;
+    padding:14px;
+    box-shadow:var(--shadow);
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    position:relative;
+  }
+
+  .due-badge{
+    position:absolute;
+    top:8px; right:8px;
+    background:#ff2e2e;
+    color:white;
+    font-weight:600;
+    font-size:12px;
+    padding:4px 8px;
+    border-radius:6px;
+  }
+
+  .avatar{ 
+    width:84px; 
+    height:84px; 
+    border-radius:10px; 
+    overflow:hidden; 
+    flex:0 0 84px; 
+    background:linear-gradient(135deg,#e6eefc,#f7fbff);
+  }
+  .avatar img{ 
+    width:100%; 
+    height:100%; 
+    object-fit:cover; 
+    display:block; 
+  }
+  .info{ 
+    flex:1; 
+    min-width:0; 
+  }
+  .name-row{ 
+    display:flex; 
+    align-items:center; 
+    gap:8px; 
+    margin-bottom:6px; 
+  }
+  .name{ 
+    font-weight:700; 
+    font-size:16px; 
+    white-space:nowrap; 
+    overflow:hidden; 
+    text-overflow:ellipsis; 
+  }
+  .phone{ 
+    color:var(--muted); 
+    font-size:13px; 
+    margin-left:auto; 
+  }
+  .address{ 
+    color:var(--muted); 
+    font-size:13px; 
+    margin-bottom:8px; 
+    line-height:1.25; 
+    max-height:2.5em; 
+    overflow:hidden; 
+    text-overflow:ellipsis; 
+  }
+  .fee{ 
+    display:flex; 
+    gap:8px; 
+    align-items:center; 
+    font-size:13px; 
+  }
+  .fee .period{ 
+    background:#f1f8ff; 
+    color:var(--accent); 
+    padding:6px 8px; 
+    border-radius:8px; 
+    font-weight:600; 
+    font-size:13px; 
+  }
+  .meta{ 
+    margin-left:auto; 
+    font-size:12px; 
+    color:var(--muted); 
+  }
+
+  /* due highlight for table */
+  .due-row td{ 
+    background:#ffecec; 
+    color:#b10000; 
+    font-weight:600; 
+  }
+  .controls{ 
+    display:flex; 
+    gap:10px; 
+    align-items:center; 
+    margin-bottom:14px; 
+  }
+  .controls input[type="search"]{ 
+    padding:9px 12px; 
+    border-radius:10px; 
+    border:1px solid #e6eef8; 
+    width:260px; 
+    outline:none; 
+    background:white; 
+  }
+  .controls button{ 
+    padding:9px 12px; 
+    background:var(--accent); 
+    color:white; 
+    border:0; 
+    border-radius:10px; 
+    cursor:pointer; 
+    font-weight:600; 
+  }
+  .table{ 
+    width:100%; 
+    border-collapse:collapse; 
+    background:var(--card); 
+    border-radius:10px; 
+    overflow:hidden; 
+    box-shadow:var(--shadow); 
+  }
+  .table th, .table td{ 
+    padding:10px 12px; 
+    text-align:left; 
+    border-bottom:1px solid #f1f5f9; 
+    font-size:14px; 
+    color:#0b1220; 
+  }
+  .table th{ 
+    background:#fbfdff; 
+    font-weight:700; 
+    font-size:13px; 
+    }
+    #toggleView{
+      background-color: #b10000;
+    }
+    .toolbar button{
+      background-color: #8fcdd8;
+      height: 37px;
+      width: 90px;
+      border-radius: 20px;
+      border-color: rgb(255, 0, 200);
+      box-shadow: hsl(0, 97%, 55%);
+    }
+    .card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: var(--shadow);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+/* Hover effect */
+.card:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Gym Members</h1>
+    <div class="toolbar"><button id="exportCsv">Export CSV</button></div>
+  </header>
+
+  <div class="controls">
+    <input type="search" id="search" placeholder="नाम / नंबर / पता से खोजें..." />
+    <button id="toggleView" style="border-radius: 20px;">Toggle Table/Card</button>
+  </div>
+
+  <div id="listArea"><div class="grid" id="cardsGrid"></div></div>
+</div>
+
+<script>
+const members = [
+  {id:1,
+    name:"Md. Sohel Reza",
+    phone:"8651133186",
+    photo:"images/sohel.jpg",
+    address:"Masoom Gali, Dargah Road, Patna-06",
+    fee_from:"2025-10-27",
+    fee_to:"2026-01-27"
+  },
+  {
+    id:2,
+    name:"Md. Shabab Reza",
+    phone:"8651133186",
+    photo:"images/shabab.jpg",
+    address:"Masoom Gali, Dargah Road, Patna-06",
+    fee_from:"2025-10-01",
+    fee_to:"2025-12-31"
+  },
+  {
+    id:3,
+    name:"Noor Jahan",
+    phone:"9304068965",
+    photo:"images/noor.png",
+    address:"Masoom Gali, Dargah Road, Patna-06",
+    fee_from:"2025-06-01",
+    fee_to:"2025-06-30"
+  },
+  {
+    id:4,
+    name:"Zeeshan Anwar",
+    phone:"8252256588",
+    photo:"images/sohel.jpg",
+    address:"Masoom Gali, Dargah Road, Patna-06",
+    fee_from:"2025-06-01",
+    fee_to:"2025-06-30"
+  },
+  {id:5,
+    name:"Arman Khan",
+    phone:"8102829759",
+    photo:"images/sohel.jpg",
+    address:"Masoom Gali, Dargah Road, Patna-06",
+    fee_from:"2025-06-01",
+    fee_to:"2025-06-30"
+  },
+  {
+    id:6,
+    name:"Asif Shaikh",
+    phone:"7319757451",
+    photo:"images/sohel.jpg",
+    address:"Masoom Gali, Dargah Road, Patna-06",
+    fee_from:"2025-05-01"
+    ,fee_to:"2025-06-30"
+  }
+];
+
+function fmt(dateStr){
+  if(!dateStr) return '-';
+  const d = new Date(dateStr+'T00:00:00');
+  if(isNaN(d)) return dateStr;
+  return `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
+}
+
+const cardsGrid = document.getElementById('cardsGrid');
+const listArea = document.getElementById('listArea');
+let isTable = false;
+
+// 🧠 नया function: membership expiry check
+function isExpired(fee_to){
+  const today = new Date();
+  const end = new Date(fee_to + 'T23:59:59');
+  return end < today;
+}
+
+function renderCards(data){
+  cardsGrid.innerHTML = '';
+  if(data.length === 0){
+    cardsGrid.innerHTML = '<div style="grid-column:1/-1;padding:20px;color:#475569">कोई सदस्य नहीं मिला.</div>';
+    return;
+  }
+
+  // while loop से rendering
+  let i = 0;
+  while(i < data.length){
+    const m = data[i];
+    const expired = isExpired(m.fee_to);
+    const el = document.createElement('div');
+    el.className = 'card';
+    el.innerHTML = `
+      ${expired ? '<div class="due-badge">Due Fee</div>' : ''}
+      <div class="avatar"><img src="${m.photo || 'https://via.placeholder.com/300'}" alt="${escapeHtml(m.name)}"/></div>
+      <div class="info">
+        <div class="name-row">
+          <div class="name">${escapeHtml(m.name)}</div>
+          <div class="phone">📞 ${escapeHtml(m.phone)}</div>
+        </div>
+        <div class="address">${escapeHtml(m.address || '-')}</div>
+        <div class="fee">
+          <div class="period">${fmt(m.fee_from)} → ${fmt(m.fee_to)}</div>
+          <div class="meta">${expired ? '<span style="color:red;font-weight:600;">Expired</span>' : 'Active'}</div>
+        </div>
+      </div>`;
+    cardsGrid.appendChild(el);
+    i++;
+  }
+}
+
+function renderTable(data){
+  const tbl = document.createElement('table');
+  tbl.className = 'table';
+  let rows = '';
+  let i = 0;
+  while(i < data.length){
+    const m = data[i];
+    const expired = isExpired(m.fee_to);
+    rows += `
+      <tr class="${expired ? 'due-row' : ''}">
+        <td style="width:72px;"><img src="${m.photo || 'https://via.placeholder.com/150'}" alt="${escapeHtml(m.name)}" style="width:56px;height:56px;object-fit:cover;border-radius:6px" /></td>
+        <td>${escapeHtml(m.name)}</td>
+        <td>${escapeHtml(m.phone)}</td>
+        <td>${escapeHtml(m.address||'-')}</td>
+        <td>${fmt(m.fee_from)} → ${fmt(m.fee_to)} ${expired ? '<span style="color:red;font-weight:600;">(Due Fee)</span>' : ''}</td>
+      </tr>`;
+    i++;
+  }
+  tbl.innerHTML = `
+    <thead>
+      <tr><th>Photo</th><th>Naam</th><th>Phone</th><th>Address</th><th>Fee (From → To)</th></tr>
+    </thead>
+    <tbody>${rows}</tbody>`;
+  listArea.innerHTML = '';
+  listArea.appendChild(tbl);
+}
+
+function render(data){ isTable ? renderTable(data) : renderCards(data); }
+
+function filterMembers(q){
+  q = (q || '').trim().toLowerCase();
+  if(!q) return members.slice();
+  return members.filter(m =>
+    (m.name||'').toLowerCase().includes(q) ||
+    (m.phone||'').toLowerCase().includes(q) ||
+    (m.address||'').toLowerCase().includes(q)
+  );
+}
+
+function escapeHtml(s){
+  if(!s && s !== 0) return '';
+  return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;");
+}
+
+function exportCsv(data){
+  if(!data || !data.length){ alert('कोई डेटा उपलब्ध नहीं है।'); return; }
+  const headers=['id','name','phone','address','fee_from','fee_to'];
+  const rows=data.map(m=>headers.map(h=>`"${String(m[h]??'').replaceAll('"','""')}"`).join(','));
+  const csv=[headers.join(','),...rows].join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='gym_members.csv';
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+
+// Initial render
+render(members);
+
+// Hooks
+document.getElementById('search').addEventListener('input',(e)=>{
+  const filtered=filterMembers(e.target.value);
+  render(filtered);
+});
+
+document.getElementById('toggleView').addEventListener('click',()=>{
+  isTable=!isTable;
+  const filtered=filterMembers(document.getElementById('search').value);
+  render(filtered);
+});
+
+document.getElementById('exportCsv').addEventListener('click',()=>{
+  const filtered=filterMembers(document.getElementById('search').value);
+  exportCsv(filtered);
+});
+</script>
+<script>
+  // जब सारे कार्ड render हो जाएं तब hover animation लगाओ
+function applyHoverAnimations() {
+  const cards = document.querySelectorAll('.card');
+  cards.forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      gsap.to(card, { 
+        scale: 1.05, 
+        y: -8, 
+        boxShadow: "0 15px 30px rgba(30,144,255,0.25)",
+        duration: 0.3, 
+        ease: "power2.out"
+      });
+    });
+    card.addEventListener('mouseleave', () => {
+      gsap.to(card, { 
+        scale: 1, 
+        y: 0, 
+        boxShadow: "0 6px 18px rgba(25, 42, 70, .08)",
+        duration: 0.3, 
+        ease: "power2.inOut"
+      });
+    });
+  });
+}
+</script>
+<script>
+  function renderCards(data) {
+  // ...existing code...
+  while (i < data.length) {
+    // cards create code
+    cardsGrid.appendChild(el);
+    i++;
+  }
+
+  // 🧩 Add this line here:
+  applyHoverAnimations();
+}
+
+</script>
+</body>
+</html>

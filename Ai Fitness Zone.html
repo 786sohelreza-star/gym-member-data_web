@@ -1,0 +1,373 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ai Fitness Zone</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+/* --- same premium styling --- */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box
+}
+body{
+    font-family:'Poppins',sans-serif;
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+    color:#fff;
+    overflow-x:hidden;
+}
+a{
+    text-decoration:none;
+    color:inherit;
+}
+img{
+    max-width:100%;
+    border-radius:12px;
+}
+section{
+    padding:80px 10%;
+}
+header{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    backdrop-filter:blur(12px);
+    background:rgba(15,23,42,0.6);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px 10%;
+    z-index:1000;
+    border-bottom:1px solid rgba(255,255,255,0.1);
+}
+header .logo{
+    font-size:1.6rem;
+    font-weight:700;color:#00ffc3;
+}
+header nav a{
+    margin:0 15px;
+    color:#cbd5e1;
+    transition:.3s;
+    font-weight:500;
+}
+header nav a:hover{
+  color:#00ffc3;
+}
+.hero{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  min-height:100vh;
+  background:url('images/gym banner.png') center/cover no-repeat;
+  position:relative;
+}
+.hero::after{
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(15,23,42,0.75);
+}
+.hero .content{
+  position:relative;
+  z-index:2;
+  max-width:550px;
+}
+.hero h1{
+  font-size:3rem;
+  color:#00ffc3;
+  line-height:1.2;
+}
+.hero p{
+  margin:20px 0;
+  color:#e2e8f0;
+}
+.hero .btn{
+  display:inline-block;
+  margin-top:10px;
+  background:#00ffc3;
+  color:#0f172a;
+  padding:12px 30px;
+  border-radius:30px;
+  font-weight:600;
+  box-shadow:0 0 20px rgba(0,255,195,0.3);
+  transition:.3s;
+}
+.hero .btn:hover{
+  box-shadow:0 0 40px rgba(0,255,195,0.6);
+}
+.about{
+  display:flex;
+  align-items:center;
+  gap:40px;
+  flex-wrap:wrap;
+}
+.about img{
+  flex:1 1 350px;
+  border-radius:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.4);
+}
+.about-text{
+  flex:1 1 350px;
+}
+.about-text h2{
+  font-size:2.2rem;
+  margin-bottom:10px;
+  color:#00ffc3;
+}
+.about-text p{
+  color:#cbd5e1;
+  margin-bottom:20px;
+  line-height:1.6;
+}
+.about-text ul{
+  list-style:none;
+  color:#94a3b8;
+}
+.about-text ul li::before{
+  content:"✓ ";
+  color:#00ffc3;
+}
+.classes{
+  text-align:center;
+}
+.classes h2{
+  color:#00ffc3;
+  margin-bottom:40px;
+}
+.class-container{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:30px;
+}
+.class-box{
+  background:rgba(255,255,255,0.05);
+  border-radius:20px;
+  padding:25px;
+  transition:.3s;
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,0.05);
+}
+.class-box:hover{
+  transform:translateY(-8px);background:rgba(255,255,255,0.08);
+}
+.class-box i{
+  font-size:2.2rem;
+  color:#00ffc3;
+  margin-bottom:15px;
+}
+.class-box h3{
+  margin-bottom:10px;
+}
+.class-box p{
+  color:#94a3b8;
+}
+.members{
+  text-align:center;
+}
+.members h2{
+  color:#00ffc3;
+  margin-bottom:30px;
+}
+.member-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+}
+.member{
+  background:rgba(255,255,255,0.05);
+  border-radius:16px;
+  padding:20px;
+  transition:.3s;
+  border:1px solid rgba(255,255,255,0.05);
+}
+.member:hover{
+  transform:translateY(-6px);background:rgba(255,255,255,0.09);
+}
+.member img{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  object-fit:cover;
+  margin-bottom:10px;
+}
+.member h4{
+  margin-bottom:6px;
+  color:#fff;
+}
+.member span{
+  color:#00ffc3;
+  font-size:.9rem;
+}
+.member p{
+  color:#94a3b8;
+  font-size:.85rem;
+  margin-top:5px;
+}
+.contact{
+  text-align:center;
+}
+.contact h2{
+  color:#00ffc3;
+  margin-bottom:20px;
+}
+.contact-info{
+  color:#cbd5e1;
+  margin-bottom:25px;
+  font-size:1rem;
+}
+.contact form{
+  max-width:500px;
+  margin:0 auto;
+  text-align:left;
+  background:rgba(255,255,255,0.05);
+  padding:30px;
+  border-radius:20px;
+  backdrop-filter:blur(8px);
+}
+.contact label{
+  display:block;
+  margin-bottom:8px;
+  color:#cbd5e1;
+  font-weight:500;
+}
+.contact input,.contact textarea{
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:8px;
+  margin-bottom:20px;
+  background:rgba(255,255,255,0.1);
+  color:#fff;
+}
+.contact button{
+  background:#00ffc3;
+  border:none;
+  color:#0f172a;
+  font-weight:600;
+  padding:12px 25px;
+  border-radius:25px;
+  cursor:pointer;
+  transition:.3s;
+  width:100%;
+}
+.contact button:hover{
+  box-shadow:0 0 30px rgba(0,255,195,0.5);
+}
+footer{
+  text-align:center;
+  padding:25px;
+  background:#0f172a;
+  color:#94a3b8;
+  font-size:.9rem;
+}
+@media(max-width:768px){header nav{display:none;}.hero h1{font-size:2.3rem;}.about{flex-direction:column;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Ai<span style="color:#fff;">FitnessZone</span></div>
+  <nav>
+    <a href="#hero">Home</a>
+    <a href="#about">About</a>
+    <a href="#classes">Classes</a>
+    <a href="Gym Members.html">Members</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="content">
+    <h1>Transform Your Body<br>With AI Fitness Zone</h1>
+    <p>Personalized workouts, real-time progress tracking, and expert guidance — all powered by AI.</p>
+    <a href="#classes" class="btn">Explore Plans</a>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <img src="images/logo1.png" alt="about " height="400px">
+  <div class="about-text">
+    <h2>About Us</h2>
+    <p><b>Ai Fitness Zone</b> combines cutting-edge artificial intelligence with professional coaching to provide a personalized experience for everyone.</p>
+    <ul>
+      <li>AI-based Workout Suggestions</li>
+      <li>Nutrition & Diet Plans</li>
+      <li>Certified Trainers</li>
+      <li>Community Events</li>
+    </ul>
+  </div>
+</section>
+
+<!-- CLASSES -->
+<section class="classes" id="classes">
+  <h2>Our Classes & Programs</h2>
+  <div class="class-container">
+    <div class="class-box"><i class="fa-solid fa-dumbbell"></i><h3>Strength Training</h3><p>Boost your endurance and muscle mass with guided programs.</p></div>
+    <div class="class-box"><i class="fa-solid fa-person-running"></i><h3>HIIT Workouts</h3><p>High intensity training for fat burn and stamina.</p></div>
+    <div class="class-box"><i class="fa-solid fa-person-praying"></i><h3>Yoga & Flexibility</h3><p>Improve balance and mental peace with daily yoga.</p></div>
+  </div>
+</section>
+
+<!-- MEMBERS -->
+<section class="members" id="members">
+  <h2>Our Gym Members</h2>
+  <div class="member-grid" id="memberGrid"></div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <h2>Contact Us</h2>
+  <div class="contact-info">
+    <p><i class="fa-solid fa-phone"></i> <b>Call:</b> <a href="tel:7250754774">+91 7250754774</a></p>
+    <p><i class="fa-solid fa-envelope"></i> <b>Email:</b> <a href="mailto:sohelreza046@gmail.com">sohelreza046@gmail.com</a></p>
+  </div>
+  <form id="contactForm">
+    <label for="name">Name</label>
+    <input id="name" required placeholder="Your Name">
+    <label for="email">Email</label>
+    <input id="email" type="email" required placeholder="you@example.com">
+    <label for="message">Message</label>
+    <textarea id="message" rows="4" required placeholder="Write your message..."></textarea>
+    <button type="submit">Send Message</button>
+  </form>
+</section>
+
+<footer>© <span id="year"></span> Ai Fitness Zone — Designed with ❤️ by Sohel Reza</footer>
+
+<script>
+// Generate members dynamically
+const members = [
+  {name:"Noor Jahan",goal:"Weight Loss",img:"images/noor.png",bio:"Lost 12kg in 6 months through AI-driven workouts."},
+  {name:"Md. Sohel Reza",goal:"Muscle Gain",img:"images/sohel.jpg",bio:"Improved strength and bulked up naturally."},
+  {name:"Md.Shabab Reza",goal:"Fitness",img:"images/shabab.jpg",bio:"Focused on flexibility and healthy lifestyle."},
+  {name:"Arman Khan",goal:"Athletics",img:"images/sohel.jpg",bio:"Marathon trainer and strength enthusiast."}
+];
+const grid=document.getElementById('memberGrid');
+members.forEach(m=>{
+  grid.innerHTML += `<div class="member"><img src="${m.img}" alt="${m.name}"><h4>${m.name}</h4><span>${m.goal}</span><p>${m.bio}</p></div>`;
+});
+document.getElementById('year').textContent=new Date().getFullYear();
+
+// Contact Form
+document.getElementById('contactForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const name=document.getElementById('name').value.trim();
+  const email=document.getElementById('email').value.trim();
+  const msg=document.getElementById('message').value.trim();
+  const mailto=`mailto:sohelreza046@gmail.com?subject=Message from ${encodeURIComponent(name)}&body=${encodeURIComponent(msg + "\n\nFrom: " + email)}`;
+  window.location.href=mailto;
+});
+</script>
+
+</body>
+</html>
